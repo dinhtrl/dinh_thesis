@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trình duyệt xem lại các tình huống té ngã</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e0f7fa; /* Màu nền xanh dương nhạt */
+            font-family: Arial, sans-serif;
+        }
+
+        .main-container {
+            background-color: #007bff; /* Màu xanh đồng nhất */
+            border-radius: 15px;
+            padding: 40px;
+            margin-top: 30px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-box {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: #007bff; /* Màu chữ xanh đồng nhất */
+        }
+
+        h1, h2 {
+            color: #ffffff; /* Màu trắng cho tiêu đề */
+            text-align: center;
+        }
+
+        h3 {
+            color: #007bff; /* Màu xanh đồng nhất */
+            text-align: center;
+        }
+
+        .date-title, .video-title {
+            background-color: #007bff; /* Màu xanh đồng nhất */
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .upload-time {
+            background-color: #e7f1ff; /* Giữ lại màu nền cho thời gian tải lên */
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .toggle-content {
+            display: none;
+        }
+
+        .navbar {
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #007bff; /* Đồng nhất màu thanh điều hướng */
+        }
+
+        .navbar-brand, .dropdown-toggle {
+            color: #fff !important;
+            font-size: 18px;
+        }
+
+        footer {
+            text-align: center;
+            color: #aaa; /* Màu xám nhạt */
+            font-size: 12px; /* Kích thước chữ nhỏ */
+            font-style: italic; /* Chữ in nghiêng */
+            margin-top: 20px; /* Khoảng cách trên */
+            padding: 20px 0; /* Khoảng cách dưới */
+        }
+
+        .btn:focus {
+            outline: 3px solid #0056b3; /* Viền xanh đậm khi nhấn */
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Hiệu ứng đổ bóng */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-light">
+        <a class="navbar-brand" href="#">Trang chủ</a>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Cài đặt
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="{{ url_for('account_info') }}">Tài khoản</a>
+                <a class="dropdown-item" href="{{ url_for('logout') }}">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-container">
+        <h1>Kho tư liệu các tình huống té ngã</h1>
+        <div class="text-center mt-4">
+            <button class="btn btn-light" onclick="toggleGallery('image-gallery')">Ảnh té ngã</button>
+            <button class="btn btn-light" onclick="toggleGallery('video-gallery')">Video té ngã</button>
+        </div>
+
+        <div id="image-gallery" class="gallery-section mt-5 content-box" style="display: none;">
+            <h2>Ảnh té ngã</h2>
+            {% for date, media in media_files.items() %}
+                <div class="date-title" onclick="toggleContent('{{ date }}', 'image')">{{ date }}</div>
+                <div id="image-{{ date }}" class="toggle-content">
+                    <div class="row">
+                        {% for image, uploaded_time in media.images %}
+                            <div class="col-md-4 mb-4 text-center">
+                                <img src="/media/{{ image }}" class="img-fluid" alt="{{ image }}">
+                                <div class="upload-time">{{ uploaded_time }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div id="video-gallery" class="gallery-section mt-5 content-box" style="display: none;">
+            <h2>Video té ngã</h2>
+            {% for date, media in media_files.items() %}
+                <div class="video-title" onclick="toggleContent('{{ date }}', 'video')">{{ date }}</div>
+                <div id="video-{{ date }}" class="toggle-content">
+                    <div class="row">
+                        {% for video, uploaded_time in media.videos %}
+                            <div class="col-md-6 mb-4 text-center">
+                                <video width="100%" height="auto" controls>
+                                    <source src="/media/{{ video }}" type="video/mp4">
+                                    <source src="/media/{{ video }}" type="video/webm">
+                                    <source src="/media/{{ video }}" type="video/ogg">
+                                    Trình duyệt của bạn không hỗ trợ video.
+                                </video>
+                                <div class="upload-time">{{ uploaded_time }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMN6EJmqlpD/Cv5kxgNgyIDfpUOXThmZG/j2PKWfQ57rqmNq0qzthuwJWh7ueXh" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function toggleGallery(gallery) {
+            const imageGallery = document.getElementById('image-gallery');
+            const videoGallery = document.getElementById('video-gallery');
+
+            if (gallery === 'image-gallery') {
+                imageGallery.style.display = imageGallery.style.display === 'none' ? 'block' : 'none';
+                videoGallery.style.display = 'none';
+            } else {
+                videoGallery.style.display = videoGallery.style.display === 'none' ? 'block' : 'none';
+                imageGallery.style.display = 'none';
+            }
+        }
+
+        function toggleContent(date, type) {
+            const content = document.getElementById(type + '-' + date);
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+    <footer>
+    This is a part of "Nghiên cứu và phát triển hệ thống té ngã dựa trên AI và IoHT" project.
+    </footer>
+
+</body>
+</html>
