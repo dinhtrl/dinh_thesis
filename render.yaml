@@ -1,8 +1,11 @@
 services:
   - type: web
-    name: fall_website
+    name: fall_website  # Thay đổi tên dịch vụ của bạn tại đây
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: python app.py
     autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 5000  # Đảm bảo PORT được thiết lập
