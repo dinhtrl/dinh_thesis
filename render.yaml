@@ -1,11 +1,8 @@
+version: 1
 services:
   - type: web
-    name: fall_website  # Thay đổi tên dịch vụ của bạn tại đây
+    name: my-flask-app
     env: python
-    plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: "gunicorn app:app --bind 0.0.0.0:5000"
-    autoDeploy: true
-    envVars:
-      - key: PORT
-        value: 5000  # Đảm bảo PORT được thiết lập
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python app.py"  # Đảm bảo rằng lệnh này chính xác
+    port: 5000  # Thường là 5000 cho Flask, nhưng hãy kiểm tra lại mã của bạn xem cổng nào đang được sử dụng
