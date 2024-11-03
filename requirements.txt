@@ -24,7 +24,7 @@ matplotlib==3.9.0
 mkl==2021.4.0
 mpmath==1.3.0
 networkx==3.3
-numpy==1.26.4
+numpy>=1.24
 opencv-python==4.9.0.80
 packaging==24.0
 pandas==2.2.2
@@ -47,9 +47,9 @@ six==1.16.0
 SQLAlchemy==2.0.35
 sympy==1.12.1
 tbb==2021.12.0
-thop==0.1.1.post2209072238
-torch==2.4.1
-torchaudio==2.2.2  # Đã bỏ ký tự +cu118
+thop==0.1.1.post2209072238  # Đảm bảo tương thích với torch
+torch==2.4.1  # Phiên bản cụ thể
+torchaudio==2.4.1  # Tương thích với torch
 torchvision==0.19.1
 tqdm==4.66.4
 typing_extensions==4.12.1
