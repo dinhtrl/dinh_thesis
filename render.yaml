@@ -1,8 +1,0 @@
-version: 1
-services:
-  - type: web
-    name: fall_website
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn -w 2 -b 0.0.0.0:5000 app:app"
-    port: 5000  # Thường là 5000 cho Flask, nhưng hãy kiểm tra lại mã của bạn xem cổng nào đang được sử dụng
