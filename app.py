@@ -4,19 +4,30 @@ import cv2
 import math
 import time
 import os
-from flask import Flask, render_template, send_from_directory, request, redirect, url_for, session
+from flask import Flask, render_template, send_from_directory, request, redirect, url_for, session, flash
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import threading
 from collections import defaultdict
 import requests
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-import threading
-from fall_detection import yolo_detection  # Import yolo_detection function
+from flask_sqlalchemy import SQLAlchemy
 
 # Khởi tạo Flask app
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.secret_key = 'sometotallyrandomandlongsecretkey123'
+
+# Cấu hình cơ sở dữ liệu
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///yourdatabase.db'  # Thay đổi đường dẫn cơ sở dữ liệu nếu cần
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# Định nghĩa mô hình User
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    phone = db.Column(db.String(150))
+    password = db.Column(db.String(150), nullable=False)
 
 # Đường dẫn đến thư mục lưu media
 MEDIA_FOLDER = os.path.join(app.static_folder, 'media')
@@ -29,6 +40,7 @@ PASSWORD_HASH = generate_password_hash('1234abcd')
 
 # -------- ROUTES FOR FLASK WEB APP --------
 SECRET_KEY = '6Le9El8qAAAAAGoEv7maM17g4TxO09lnAFFAmTNV'
+
 @app.route('/')
 def home():
     return redirect(url_for('login'))  # Chuyển hướng luôn đến trang đăng nhập
@@ -118,11 +130,11 @@ def account_info():
         if extension in image_extensions:
             total_images += 1
             recent_falls.append({'time': uploaded_time, 'type': 'Ảnh', 'filename': filename})
-            fall_dates[date]['images'] += 1  # Cộng số lượng ảnh cho ngày tương ứng
+            fall_dates[date]['images'] += 1  # Cập nhật số lượng ảnh cho ngày tương ứng
         elif extension in video_extensions:
             total_videos += 1
             recent_falls.append({'time': uploaded_time, 'type': 'Video', 'filename': filename})
-            fall_dates[date]['videos'] += 1  # Cộng số lượng video cho ngày tương ứng
+            fall_dates[date]['videos'] += 1  # Cập nhật số lượng video cho ngày tương ứng
 
     # Sắp xếp danh sách các trường hợp té ngã gần đây theo thời gian giảm dần
     recent_falls = sorted(recent_falls, key=lambda x: x['time'], reverse=True)[:10]  # Lấy 10 trường hợp gần nhất
@@ -149,6 +161,9 @@ def logout():
 
 @app.route('/edit_account', methods=['POST'])
 def edit_account():
+    if not session.get('logged_in'):  # Kiểm tra nếu người dùng đã đăng nhập
+        return redirect(url_for('login'))
+
     phone = request.form['phone']
     new_password = request.form['password']
     confirm_password = request.form['confirm_password']
@@ -169,6 +184,9 @@ def update_user_info(phone, new_password):
         user.password = generate_password_hash(new_password)  # Cập nhật mật khẩu đã được hash
         db.session.commit()  # Lưu thay đổi vào cơ sở dữ liệu
 
+# Nhập khẩu hàm yolo_detection từ tệp fall_detection
+from fall_detection import yolo_detection  # Import yolo_detection function
+
 if __name__ == '__main__':
-    threading.Thread(target=yolo_detection, daemon=True).start()  # Run yolo_detection
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+    threading.Thread(target=yolo_detection, daemon=True).start()  # Chạy hàm yolo_detection
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))  # Chạy ứng dụng Flask
