@@ -1,7 +1,7 @@
 version: 1
 services:
   - type: web
-    name: my-flask-app
+    name: fall_website
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "python app.py"  # Đảm bảo rằng lệnh này chính xác
