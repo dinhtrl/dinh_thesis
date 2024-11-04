@@ -184,9 +184,6 @@ def update_user_info(phone, new_password):
         user.password = generate_password_hash(new_password)  # Cập nhật mật khẩu đã được hash
         db.session.commit()  # Lưu thay đổi vào cơ sở dữ liệu
 
-# Nhập khẩu hàm yolo_detection từ tệp fall_detection
-from fall_detection import yolo_detection  # Import yolo_detection function
-
 if __name__ == '__main__':
     threading.Thread(target=yolo_detection, daemon=True).start()  # Chạy hàm yolo_detection
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))  # Chạy ứng dụng Flask
