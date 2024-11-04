@@ -12,8 +12,7 @@ from collections import defaultdict
 import requests
 from flask_sqlalchemy import SQLAlchemy
 
-# Khởi tạo Flask app
-app = Flask(__name__, template_folder='templates', static_folder='static')
+app = Flask(__name__)
 app.secret_key = 'sometotallyrandomandlongsecretkey123'
 
 # Cấu hình cơ sở dữ liệu
