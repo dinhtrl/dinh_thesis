@@ -189,4 +189,4 @@ from fall_detection import yolo_detection  # Import yolo_detection function
 
 if __name__ == '__main__':
     threading.Thread(target=yolo_detection, daemon=True).start()  # Chạy hàm yolo_detection
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))  # Chạy ứng dụng Flask
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))  # Chạy ứng dụng Flask
